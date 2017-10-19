@@ -1,0 +1,161 @@
+@import "variables.scss";
+@import "mixins.scss";
+
+* {
+    box-sizing: border-box;
+    line-height: 1.4;
+    outline: 0;
+    color: darken($gray, $darkener * $comparative);
+    -webkit-tap-highlight-color: transparent;
+}
+
+*::-moz-selection {
+    background: darken($gray, $darkener * $superlative) none repeat scroll 0 0;
+    color: lighten($gray, $lightener * $superlative);
+}
+
+body {
+    background: lighten($gray, $lightener * $superlative);
+    padding: 0 5px 5px;
+    font-family: $font_family;
+    font-style: normal;
+    font-weight: 400;
+    font-size: 16px;
+}
+
+input, select, button {
+    font-family: $interactable_font_family;
+    border: 1px solid darken($gray, $darkener);
+}
+
+input:-webkit-autofill {
+    &,
+    &:hover,
+    &:focus {
+        -webkit-box-shadow: 0 0 0 1000px $white inset;
+        -webkit-text-fill-color: darken($gray, $darkener * $comparative) !important;
+    }
+}
+
+textarea {
+    resize: none;
+    width: 100%;
+}
+
+a {
+    text-decoration: none;
+}
+
+.inline {
+    & > * {
+        display: inline-block;
+    }
+}
+
+button {
+    font-size: 100%;
+    border: 1px solid darken($gray, $darkener * $comparative);
+    background-color: lighten($gray, $lightener * $comparative);
+    color: darken($gray, $darkener * $comparative);
+    border-radius: 3px;
+    padding: 3px 5px;
+    transition: all .1s ease-in-out;
+    &:hover,
+    &:focus {
+        &:not([disabled="disabled"]) {
+            cursor: pointer;
+            background-color: darken($gray, $darkener * $comparative);
+            color: lighten($gray, $lightener * $superlative);
+        }
+    }
+    &[disabled="disabled"] {
+        background-color: lighten($gray, $lightener * $comparative);
+        border-color: lighten($gray, $lightener);
+        color: $gray;
+    }
+}
+
+select {
+    padding: 2px 5px;
+    height: 30px;
+    font-size: 100%;
+
+    & > option {
+        padding: 5px;
+    }
+}
+
+aside {
+    display: none;
+}
+
+#status {
+    font-family: monospace;
+    div {
+        display: inline-block;
+    }
+    span {
+        color: $red;
+        &.success {
+            color: $green;
+        }
+    }
+}
+
+header {
+    font-family: monospace;
+    font-size: 18px;
+}
+
+.button-tray {
+    button {
+        margin: 20px 50px;
+    }
+}
+
+.sink-state-error {
+    min-height: 80px;
+
+    p {
+        display: inline-block;
+        margin-right: 20px;
+        font-family: monospace;
+        color: red;
+    }
+}
+
+.sink-state-explaination {
+    font-family: monospace;
+}
+
+.sink-control {
+    font-family: monospace;
+    display: inline-block;
+    padding: 5px 20px;
+    margin: 5px;
+}
+
+.main-content {
+    margin: auto;
+    width: 1150px;
+}
+
+.sink-state-graph {
+    border: 1px solid black;
+    margin: auto;
+}
+
+.hidden {
+    visibility: hidden;
+    position: absolute !important;
+}
+
+@media only screen and (min-width : 481px) {
+    body {
+        font-size: 18px;
+        padding: 0 10px 10px;
+        aside {
+            display: block;
+        }
+    }
+}

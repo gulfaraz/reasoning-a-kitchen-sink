@@ -17,15 +17,19 @@ gulp.task('bower', function (cb) {
 
 gulp.task('lint', function() {
     return gulp.src([
-        config.src + '/sandbox/**/*.js',
+        config.src + '/kitchen-sink/**/*.js',
         './routes/**/*.js'
         ])
-    .pipe(plugin.jshint())
+    .pipe(plugin.jshint({esversion: 6}))
     .pipe(plugin.jshint.reporter('default'));
 });
 
 gulp.task('sass', function() {
-    return gulp.src([config.src + '/**/*.scss', '!' + config.src + '/sandbox/common/variables.scss', '!' + config.src + '/sandbox/common/mixins.scss'])
+    return gulp.src([
+        config.src + '/**/*.scss',
+        '!' + config.src + '/kitchen-sink/common/variables.scss',
+        '!' + config.src + '/kitchen-sink/common/mixins.scss'
+    ])
     .pipe(plugin.if(config.debug, plugin.sourcemaps.init()))
     .pipe(plugin.sass())
     .pipe(plugin.autoprefixer({
@@ -47,9 +51,14 @@ gulp.task('markup', function() {
 gulp.task('scripts', function() {
   return gulp.src([
         config.src + '/lib/angular/angular.js',
+        config.src + '/lib/jquery.js',
+        config.src + '/lib/loadash.js',
+        config.src + '/lib/backbone.js',
+        config.src + '/lib/joint.js',
+        config.src + '/lib/joint-shapes-uml.js',
         config.src + '/lib/**/*.js',
-        config.src + '/sandbox/*.js',
-        config.src + '/sandbox/**/*.js'
+        config.src + '/kitchen-sink/*.js',
+        config.src + '/kitchen-sink/**/*.js'
         ])
     .pipe(plugin.if(config.debug, plugin.sourcemaps.init()))
     .pipe(plugin.concat('main.js'))

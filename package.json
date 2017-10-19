@@ -1,7 +1,7 @@
 {
-  "name": "sandbox",
+  "name": "reasoning-a-kitchen-sink",
   "version": "1.0.0",
-  "description": "gulfaraz's playground",
+  "description": "Qualitative Reasoning Assignment UvA #KRCourse2017",
   "main": "gulpfile.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
