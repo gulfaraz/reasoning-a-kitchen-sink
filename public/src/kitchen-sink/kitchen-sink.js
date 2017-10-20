@@ -505,8 +505,83 @@ angular.module("kitchenSinkApp", [])
             }
             backlist.push(startState);
             var path = angular.copy(backlist);
-            path.pop();
             path.reverse();
+
+            var interState = {};
+            var interStateTransitionInto = {};
+            var interStateTransitionFrom = {};
+
+            function addText(list, newText) {
+                if(list.indexOf(newText) == -1) {
+                    list.push(newText);
+                }
+                return list;
+            }
+
+            angular.forEach(path, function (value, index) {
+                if(index < path.length - 1) {
+                    var stateObject1 = getStateObjectFromId(path[index]);
+                    var stateObject2 = getStateObjectFromId(path[index + 1]);
+                    var currentIndex = stateObject2.index;
+                    if(!interState[currentIndex]) {
+                        interState[currentIndex] = [];
+                    }
+                    if(index < 1) {
+                        addText(interState[currentIndex], "Initial state has been selected to have inflow magnitude (" + displayMagnitude(stateObject1.inflow) + ") and inflow derivative (" + displayDerivative(stateObject1.derivativeInflow) + ") because of the selected behaviour of the inflow (" + scope.selectedInflowDerivative + ")\n");
+                        addText(interState[currentIndex], "The volume is selected to have magnitude (" + displayMagnitude(stateObject1.volume) + ")\n");
+                        if(stateObject1.inflow > 0) {
+                            addText(interState[currentIndex], "The magnitude of the inflow (" + displayMagnitude(stateObject1.inflow) + ") influences the volume derivative to be " + displayDerivative(stateObject1.derivativeVolume) + "\n");
+                            addText(interState[currentIndex], "The height, pressure and outflow are proportional to volume so the values reflect that of the volume (" + displayMagnitude(stateObject1.volume) + ", " + displayDerivative(stateObject1.derivativeVolume) + ")\n");
+                        }
+                    } else {
+                        var transitionString = stateObject1.index + " -> " + stateObject2.index;
+                        if(interStateTransitionInto[stateObject2.index]) {
+                            interStateTransitionInto[stateObject2.index].push(transitionString);
+                        } else {
+                            interStateTransitionInto[stateObject2.index] = [ transitionString ];
+                        }
+                        if(interStateTransitionFrom[stateObject1.index]) {
+                            interStateTransitionFrom[stateObject1.index].push(transitionString);
+                        } else {
+                            interStateTransitionFrom[stateObject1.index] = [ transitionString ];
+                        }
+                    }
+                    if(stateObject1.derivativeInflow != stateObject2.derivativeInflow) {
+                        if(stateObject2.derivativeInflow == 0) {
+                            addText(interState[currentIndex], "Derivative of Inflow changed to " + displayDerivative(stateObject2.derivativeInflow) + " from " + displayDerivative(stateObject1.derivativeInflow) + " because of the selected behaviour of the inflow (" + scope.selectedInflowDerivative + ")\n");
+                        } else {
+                            addText(interState[currentIndex], "The derivative of the inflow (" + displayDerivative(stateObject2.derivativeInflow) + ") influences the derivative of the volume to change to " + displayDerivative(stateObject2.derivativeVolume) + " from " + displayDerivative(stateObject1.derivativeVolume) + "\n");
+                        }
+                        addText(interState[currentIndex], "The height, pressure and outflow are proportional to volume so their derivatives reflect the derivative of the volume (" + displayDerivative(stateObject2.derivativeVolume) + ")\n");
+                    } else {
+                        if(stateObject1.derivativeVolume != stateObject2.derivativeVolume) {
+                            addText(interState[currentIndex], "Derivative of volume changes to " + displayDerivative(stateObject2.derivativeVolume) + " from " + displayDerivative(stateObject1.derivativeVolume) + " due to the influence of the derivative of inflow (" + displayDerivative(stateObject2.derivativeInflow) + ")\n");
+                            addText(interState[currentIndex], "The height, pressure and outflow are proportional to volume so their derivatives reflect the derivative of the volume (" + displayDerivative(stateObject2.derivativeVolume) + ")\n");
+                        }
+                    }
+                    if(stateObject1.inflow != stateObject2.inflow) {
+                        addText(interState[currentIndex], "Inflow changed to " + displayMagnitude(stateObject2.inflow) + " from " + displayMagnitude(stateObject1.inflow) + " due to the derivative of inflow (" + displayDerivative(stateObject2.derivativeInflow) + ")\n");
+                        addText(interState[currentIndex], "The magnitude of the inflow (" + displayMagnitude(stateObject2.inflow) + ") influences the derivative of the volume to change to " + displayDerivative(stateObject2.derivativeVolume) + " from " + displayDerivative(stateObject1.derivativeVolume) + "\n");
+                        addText(interState[currentIndex], "The height, pressure and outflow are proportional to volume so their derivatives reflect the derivative of the volume (" + displayDerivative(stateObject2.derivativeVolume) + ")\n");
+                    }
+                    if(stateObject1.volume != stateObject2.volume) {
+                        if(stateObject2.volume == 2) {
+                            addText(interState[currentIndex], "The derivative of the volume changes to " + displayDerivative(stateObject2.derivativeVolume) + " from " + displayDerivative(stateObject1.derivativeVolume) + " because the volume is at maximum (" + displayMagnitude(stateObject2.volume) + ")\n");
+                            addText(interState[currentIndex], "The derivative of the height changes to " + displayDerivative(stateObject2.derivativeVolume) + " from " + displayDerivative(stateObject1.derivativeVolume) + " because the height is at maximum (" + displayMagnitude(stateObject2.volume) + ")\n");
+                            addText(interState[currentIndex], "The derivative of the pressure changes to " + displayDerivative(stateObject2.derivativeVolume) + " from " + displayDerivative(stateObject1.derivativeVolume) + " because the pressure is at maximum (" + displayMagnitude(stateObject2.volume) + ")\n");
+                            addText(interState[currentIndex], "The derivative of the outflow changes to " + displayDerivative(stateObject2.derivativeVolume) + " from " + displayDerivative(stateObject1.derivativeVolume) + " because the outflow is at maximum (" + displayMagnitude(stateObject2.volume) + ")\n");
+
+                        } else {
+                            addText(interState[currentIndex], "The magnitude of the volume changes to " + displayMagnitude(stateObject2.volume) + " from " + displayMagnitude(stateObject1.volume) + " due to the derivative at the volume (" + displayDerivative(stateObject2.derivativeVolume) + ")\n");
+                            addText(interState[currentIndex], "The magnitude of the height changes to " + displayMagnitude(stateObject2.volume) + " from " + displayMagnitude(stateObject1.volume) + " due to the derivative at the height (" + displayDerivative(stateObject2.derivativeVolume) + ")\n");
+                            addText(interState[currentIndex], "The magnitude of the pressure changes to " + displayMagnitude(stateObject2.volume) + " from " + displayMagnitude(stateObject1.volume) + " due to the derivative at the pressure (" + displayDerivative(stateObject2.derivativeVolume) + ")\n");
+                            addText(interState[currentIndex], "The magnitude of the outflow changes to " + displayMagnitude(stateObject2.volume) + " from " + displayMagnitude(stateObject1.volume) + " due to the derivative at the outflow (" + displayDerivative(stateObject2.derivativeVolume) + ")\n");
+                        }
+                    }
+                }
+            });
+
+            path.shift();
 
             output += "\n===============================================================================================================\n";
             output += "\nINTER STATE CHANGES:\n";
@@ -534,57 +609,17 @@ angular.module("kitchenSinkApp", [])
 
             output += "\n===============================================================================================================\n";
             output += "\nINTRA STATE CHANGES:\n";
-            var interState = {};
-            var interStateTransitions = {};
-
-            function addText(list, newText) {
-                if(list.indexOf(newText) == -1) {
-                    list.push(newText);
-                }
-                return list;
-            }
 
             angular.forEach(path, function (value, index) {
-                if(index < path.length - 1) {
-                    var stateObject1 = getStateObjectFromId(path[index]);
-                    var stateObject2 = getStateObjectFromId(path[index + 1]);
-                    var currentIndex = stateObject1.index;
-                    if(!interState[currentIndex]) {
-                        interState[currentIndex] = [];
-                        interStateTransitions[currentIndex] = [];
-                    }
-                    interStateTransitions[currentIndex].push(stateObject1.index + " -> " + stateObject2.index);
-                    if(stateObject1.derivativeInflow != stateObject2.derivativeInflow) {
-                        if(stateObject2.derivativeInflow == 0) {
-                            addText(interState[currentIndex], "Derivative of Inflow changed to " + displayDerivative(stateObject2.derivativeInflow) + " from " + displayDerivative(stateObject1.derivativeInflow) + " because of the selected behaviour of the inflow (" + scope.selectedInflowDerivative + ")\n");
-                        } else {
-                            addText(interState[currentIndex], "The derivative of the inflow (" + displayDerivative(stateObject2.derivativeInflow) + ") influences the derivative of the volume to change to " + displayDerivative(stateObject2.derivativeVolume) + " from " + displayDerivative(stateObject1.derivativeVolume) + "\n");
-                        }
-                        addText(interState[currentIndex], "The height, pressure and outflow are proportional to volume so their derivatives reflect the derivative of the volume (" + displayDerivative(stateObject2.derivativeVolume) + ")\n");
-                    } else {
-                        if(stateObject1.derivativeVolume != stateObject2.derivativeVolume) {
-                            addText(interState[currentIndex], "Derivative of volume changes to " + displayDerivative(stateObject2.derivativeVolume) + " from " + displayDerivative(stateObject1.derivativeVolume) + " due to the influence of the derivative of inflow (" + displayDerivative(stateObject2.derivativeInflow) + ")\n");
-                            addText(interState[currentIndex], "The height, pressure and outflow are proportional to volume so their derivatives reflect the derivative of the volume (" + displayDerivative(stateObject2.derivativeVolume) + ")\n");
-                        }
-                    }
-                    if(stateObject1.inflow != stateObject2.inflow) {
-                        addText(interState[currentIndex], "Inflow changed to " + displayMagnitude(stateObject2.inflow) + " from " + displayMagnitude(stateObject1.inflow) + " due to the derivative of inflow (" + displayDerivative(stateObject2.derivativeInflow) + ")\n");
-                        addText(interState[currentIndex], "The magnitude of the inflow (" + displayMagnitude(stateObject2.inflow) + ") influences the derivative of the volume to change to " + displayDerivative(stateObject2.derivativeVolume) + " from " + displayDerivative(stateObject1.derivativeVolume) + "\n");
-                        addText(interState[currentIndex], "The height, pressure and outflow are proportional to volume so their derivatives reflect the derivative of the volume (" + displayDerivative(stateObject2.derivativeVolume) + ")\n");
-                    }
-                    if(stateObject1.volume != stateObject2.volume) {
-                        addText(interState[currentIndex], "The magnitude of the volume changes to " + displayMagnitude(stateObject2.volume) + " from " + displayMagnitude(stateObject1.volume) + " due to the derivative at the volume (" + displayDerivative(stateObject2.derivativeVolume) + ")\n");
-                        addText(interState[currentIndex], "The magnitude of the height changes to " + displayMagnitude(stateObject2.volume) + " from " + displayMagnitude(stateObject1.volume) + " due to the derivative at the height (" + displayDerivative(stateObject2.derivativeVolume) + ")\n");
-                        addText(interState[currentIndex], "The magnitude of the pressure changes to " + displayMagnitude(stateObject2.volume) + " from " + displayMagnitude(stateObject1.volume) + " due to the derivative at the pressure (" + displayDerivative(stateObject2.derivativeVolume) + ")\n");
-                        addText(interState[currentIndex], "The magnitude of the outflow changes to " + displayMagnitude(stateObject2.volume) + " from " + displayMagnitude(stateObject1.volume) + " due to the derivative at the outflow (" + displayDerivative(stateObject2.derivativeVolume) + ")\n");
-                    }
+                var stateIndex = getStateObjectFromId(value).index;
+                output += stateIndex + "\t:\n";
+                if(index > 0) {
+                    output += "Transition(s) Into" + "\t:\t" + interStateTransitionInto[stateIndex].join(", ") + "\n";
                 }
-            });
-
-            angular.forEach(interState, function (value, index) {
-                output += index + "\t:\n";
-                output += "Transition(s)" + "\t:\t" + interStateTransitions[index].join(", ") + "\n";
-                output += value.join("");
+                if(index < path.length - 1) {
+                    output += "Transition(s) From" + "\t:\t" + interStateTransitionFrom[stateIndex].join(", ") + "\n";
+                }
+                output += interState[stateIndex].join("");
             });
 
             return [ output, path ];
