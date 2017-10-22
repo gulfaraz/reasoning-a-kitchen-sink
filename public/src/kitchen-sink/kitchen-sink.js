@@ -3,7 +3,7 @@ angular.module("kitchenSinkApp", [])
         scope.delay = 1000;
 
         scope.showGraph = true;
-        scope.showExplaination = true;
+        scope.showExplanation = true;
 
         scope.log = [ "Click 'Start' Button" ];
         scope.error = [ "Click 'Start' Button" ];
@@ -687,7 +687,7 @@ angular.module("kitchenSinkApp", [])
         scope.start = function (iVolume, iInflow, iDerivative) {
 
             scope.showGraph = true;
-            scope.showExplaination = true;
+            scope.showExplanation = true;
 
             var log = "No Inferences Made", error = "";
 

@@ -29,7 +29,7 @@
                 <div class="button-tray">
                     <button type="button" ng-click="showGraph = !showGraph">{{ showGraph ? "Hide" : "Show" }} Graph</button>
                     <button type="button" ng-click="resetStates()">Show All States</button>
-                    <button type="button" ng-click="showExplaination = !showExplaination">{{ showExplaination ? "Hide" : "Show" }} Explaination</button>
+                    <button type="button" ng-click="showExplanation = !showExplanation">{{ showExplanation ? "Hide" : "Show" }} Explanation</button>
                 </div>
                 <article class="sink-state-error">
                     <p ng-repeat="line in error track by $index">{{line}}</p>
@@ -38,7 +38,7 @@
             <section class="sink-state-graph" ng-class="{'hidden' : !showGraph }">
                 State Graph Initialization Failed
             </section>
-            <section class="sink-state-explaination" ng-class="{'hidden' : !showExplaination }">
+            <section class="sink-state-explanation" ng-class="{'hidden' : !showExplanation }">
                 <p ng-repeat="line in log track by $index">{{line}}</p>
             </section>
         </section>
